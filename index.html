@@ -1,80 +1,614 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Recommendation Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Book Recommendation</h1>
+
+    <form id="preferenceForm">
+      <input type="text" id="genre" placeholder="Enter your preferred genre" required />
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    <div id="recommendations"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+                                     -->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Media Mock Post Scheduler</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Book Recommendation Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Custom styles for the book cards and details, for demonstration */
+        .book-card {
+            background-color: #1d4ed8; /* Tailwind's indigo-700 */
+            border-radius: 0.5rem; /* Tailwind's rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind's shadow-md */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            overflow: hidden; /* Ensure image doesn't overflow rounded corners */
+        }
+
+        .book-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -2px rgba(0, 0, 0, 0.15); /* Tailwind's shadow-xl */
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 200px; /* Fixed height for consistency */
+            object-fit: cover; /* Ensure image covers the area, cropping if necessary */
+            border-top-left-radius: 0.5rem; /* Tailwind's rounded-lg */
+            border-top-right-radius: 0.5rem;
+        }
+
+        .book-card-body {
+            padding: 1rem;
+            color: white;
+        }
+
+        .book-title {
+            font-size: 1.25rem; /* Tailwind's text-lg */
+            font-weight: 500; /* Tailwind's font-semibold */
+            margin-bottom: 0.5rem; /* Tailwind's mb-2 */
+        }
+
+        .book-author {
+            font-size: 0.875rem; /* Tailwind's text-sm */
+            color: #d8b4fe; /* Tailwind's violet-200 */
+        }
+
+        .book-details {
+            background-color: #0c1a55; /* A darker shade, still in the indigo family */
+            border-radius: 0.5rem; /* Tailwind's rounded-lg */
+            padding: 2rem;
+            color: white;
+            max-width: 800px; /* Increased max-width for larger screens */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .book-details h2 {
+            font-size: 2rem; /* Tailwind's text-3xl */
+            font-weight: 700; /* Tailwind's font-bold */
+            margin-bottom: 1rem; /* Tailwind's mb-4 */
+            color: #f5f5f5;
+        }
+
+        .book-details h3 {
+            font-size: 1.5rem; /* Tailwind's text-2xl */
+            font-weight: 600; /* Tailwind's font-semibold */
+            margin-bottom: 1rem; /* Tailwind's mb-4 */
+            color: #f5f5f5;
+        }
+
+        .book-details p {
+            font-size: 1rem; /* Tailwind's text-base */
+            color: #e0e0e0;
+            line-height: 1.75; /* Tailwind's leading-relaxed */
+            margin-bottom: 1rem; /* Tailwind's mb-4 */
+        }
+
+        .book-details img {
+            width: 100%;
+            max-width: 300px; /* Increased max-width for detail image */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 0.5rem; /* Tailwind's rounded-lg */
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -1px rgba(0, 0, 0, 0.1); /* Tailwind's shadow-lg */
+            margin-bottom: 1rem; /* Tailwind's mb-4 */
+        }
+
+        .review {
+            background-color: #1e3a8a; /* A slightly lighter shade for reviews */
+            padding: 1.5rem;
+            border-radius: 0.5rem; /* Tailwind's rounded-lg */
+            margin-bottom: 1rem; /* Tailwind's mb-4 */
+            border: 1px solid #3b82f6;
+        }
+
+        .review-input {
+            background-color: #1e3a8a; /* */
+            color: white;
+            border: 1px solid #3b82f6;
+            border-radius: 0.375rem; /* Tailwind's rounded-md */
+            padding: 0.75rem; /* Tailwind's p-3 */
+            width: 100%;
+            margin-bottom: 1rem; /* Tailwind's mb-4 */
+            resize: none; /* Prevent manual resizing */
+            min-height: 100px;
+        }
+
+        .review-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Tailwind's ring-blue-500 with opacity */
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse; /* Start from right for visual effect */
+            gap: 0.5rem; /* Tailwind's gap-2 */
+            margin-bottom: 1rem;
+        }
+
+        .star-rating input {
+            display: none; /* Hide the actual input elements */
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            font-size: 1.5rem; /* Tailwind's text-3xl */
+            color: #a855f7; /* Tailwind's purple-400 */
+            transition: color 0.2s ease;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #f59e0b; /* Tailwind's amber-500 */
+        }
+        .genre-select {
+            background-color: #1e3a8a;
+            color: white;
+            border: 1px solid #3b82f6;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .genre-select:hover,
+        .genre-select.selected {
+            background-color: #3b82f6;
+            transform: scale(1.05);
+        }
+
+        .genre-select.selected {
+            box-shadow: 0 0 5px #fff;
+        }
+
+        .preferences-panel {
+            background-color: #1e3a8a;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #3b82f6;
+        }
+
+        .preferences-panel h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #f5f5f5;
+        }
+
+        .genre-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Schedule Your Mock Social Media Post</h1>
+<body class="bg-gray-900 font-sans antialiased">
+    <header class="bg-indigo-900 text-white py-6 text-center">
+        <h1 class="text-3xl font-semibold flex items-center justify-center gap-3">
+            <i class="fas fa-book-open text-blue-400"></i>
+            Book Recommendation Hub
+        </h1>
+        <p class="text-gray-300 mt-2">Explore curated book recommendations based on your preferences.</p>
+    </header>
 
-        <div class="input-section">
-            <label for="platform">Platform:</label>
-            <select id="platform">
-                <option value="facebook">Facebook</option>
-                <option value="twitter">Twitter</option>
-                <option value="instagram">Instagram</option>
-                <option value="linkedin">LinkedIn</option>
-            </select>
-
-            <label for="post-text">Post Text:</label>
-            <textarea id="post-text" placeholder="Enter your post text here"></textarea>
-
-            <label for="image-url">Image URL (Optional):</label>
-            <input type="url" id="image-url" placeholder="Enter image URL">
-
-            <label for="schedule-time">Schedule Time:</label>
-            <input type="datetime-local" id="schedule-time">
-
-            <button id="schedule-button">Schedule Post</button>
+    <main class="container mx-auto py-8">
+        <div class="flex flex-col sm:flex-row gap-4 mb-6 items-center">
+            <input
+                type="text"
+                id="search-box"
+                placeholder="Search for books, authors, or genres..."
+                class="flex-grow bg-indigo-800 text-white border border-indigo-700 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 w-full sm:w-auto"
+            />
+            <button id="preferences-button" class="bg-indigo-800 text-white border border-indigo-700 rounded-md px-4 py-2 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2">
+                 <i class="fas fa-heart text-purple-400"></i>
+                Your Preferences
+            </button>
         </div>
 
-        <div class="preview-section">
-            <h2>Post Preview</h2>
-            <div id="post-preview-container">
-                <div id="facebook-preview" class="social-preview">
-                    <div class="platform-header">Facebook</div>
-                    <div class="post-content">
-                        <p class="preview-text"></p>
-                        <img class="preview-image" src="" alt="">
-                    </div>
-                </div>
-
-                <div id="twitter-preview" class="social-preview">
-                    <div class="platform-header">Twitter</div>
-                    <div class="post-content">
-                        <p class="preview-text"></p>
-                        <img class="preview-image" src="" alt="">
-                    </div>
-                </div>
-
-                <div id="instagram-preview" class="social-preview">
-                    <div class="platform-header">Instagram</div>
-                    <div class="post-content">
-                        <img class="preview-image" src="" alt="">
-                        <p class="preview-text"></p>
-                    </div>
-                </div>
-
-                <div id="linkedin-preview" class="social-preview">
-                    <div class="platform-header">LinkedIn</div>
-                    <div class="post-content">
-                        <p class="preview-text"></p>
-                        <img class="preview-image" src="" alt="">
-                    </div>
-                </div>
+        <div id="preferences-panel" class="preferences-panel hidden">
+            <h3>Select Your Preferred Genres</h3>
+            <div id="genre-options" class="genre-options">
             </div>
+            <button id="save-preferences" class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Save Preferences
+            </button>
         </div>
 
-        <div class="scheduled-posts-section">
-            <h2>Scheduled Posts</h2>
-            <ul id="scheduled-posts-list">
-                </ul>
-        </div>
-    </div>
+        <div id="recommendations-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
 
-    <script src="script.js"></script>
+        <div id="book-details" class="book-details hidden">
+            <h2 id="detail-title">Book Title</h2>
+            <h3 id="detail-author">By Author</h3>
+            <img id="detail-image" src="" alt="Book Cover">
+            <p id="detail-description">Book Description</p>
+            <div class="flex items-center gap-2 mb-4">
+                <i class="fas fa-star text-yellow-400"></i>
+                <span id="detail-rating" class="text-xl text-gray-200">4.5</span>
+            </div>
+            <div id="detail-genres" class="flex flex-wrap gap-2 mb-4">
+                </div>
+            <h3>Reviews</h3>
+            <div id="detail-reviews">
+                </div>
+            <h3>Add a Review</h3>
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" checked><label for="star5" title="5 stars">★</label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+            </div>
+            <textarea id="review-input" placeholder="Write your review here..." class="review-input"></textarea>
+            <button id="submit-review" class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Submit Review
+            </button>
+            <div id="review-message" class="mt-4 text-yellow-400 font-semibold"></div>
+        </div>
+    </main>
+
+    <script>
+        // Mock data for books and reviews (replace with actual data from your server)
+        const mockBooks = [
+            {
+                id: '1',
+                title: 'The Great Gatsby',
+                author: 'F. Scott Fitzgerald',
+                coverUrl: 'https://m.media-amazon.com/images/I/71FTb7KfH0L._AC_UF1000,1000_QL80_.jpg',
+                description: 'A novel about the decadence of the Jazz Age, narrated by Nick Carraway, who lives near millionaire Jay Gatsby and his lavish parties.',
+                rating: 4.5,
+                genres: ['Classic', 'Fiction'],
+            },
+            {
+                id: '2',
+                title: 'To Kill a Mockingbird',
+                author: 'Harper Lee',
+                coverUrl: 'https://m.media-amazon.com/images/I/71FxgtFxFjL._AC_UF1000,1000_QL80_.jpg',
+                description: 'Set in Alabama, this novel explores themes of racial injustice and childhood innocence through the eyes of Scout Finch.',
+                rating: 4.8,
+                genres: ['Classic', 'Fiction'],
+            },
+            {
+                id: '3',
+                title: 'Pride and Prejudice',
+                author: 'Jane Austen',
+                coverUrl: 'https://m.media-amazon.com/images/I/71Q1tPupKjL._AC_UF1000,1000_QL80_.jpg',
+                description: 'A romantic novel about Elizabeth Bennet and her tumultuous relationship with the wealthy Mr. Darcy.',
+                rating: 4.7,
+                genres: ['Romance', 'Classic'],
+            },
+            {
+                id: '4',
+                title: '1984',
+                author: 'George Orwell',
+                coverUrl: 'https://m.media-amazon.com/images/I/71yNgTMEcpL._AC_UF1000,1000_QL80_.jpg',
+                description: 'A dystopian novel set in Oceania, a totalitarian state ruled by the Party and Big Brother.',
+                rating: 4.6,
+                genres: ['Dystopian', 'Science Fiction'],
+            },
+            {
+                id: '5',
+                title: 'The Lord of the Rings',
+                author: 'J.R.R. Tolkien',
+                coverUrl: 'https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg',
+                description: 'An epic fantasy adventure about a group of heroes on a quest to destroy the One Ring and defeat the Dark Lord Sauron.',
+                rating: 4.9,
+                genres: ['Fantasy', 'Adventure'],
+            },
+             {
+                id: '6',
+                title: 'The Hitchhiker\'s Guide to the Galaxy',
+                author: 'Douglas Adams',
+                coverUrl: 'https://m.media-amazon.com/images/I/71+q7uUBFjL._AC_UF1000,1000_QL80_.jpg',
+                description:
+                    "A comedic science fiction series about the misadventures of the last surviving human, Arthur Dent, after Earth's destruction.",
+                rating: 4.4,
+                genres: ['Science Fiction', 'Comedy'],
+            },
+            {
+                id: '7',
+                title: "Harry Potter and the Sorcerer's Stone",
+                author: 'J.K. Rowling',
+                coverUrl: 'https://m.media-amazon.com/images/I/71jK+o5kLWL._AC_UF1000,1000_QL80_.jpg',
+                description: "The first book in the Harry Potter series, where Harry discovers he is a wizard and begins his studies at Hogwarts.",
+                rating: 4.7,
+                genres: ['Fantasy', 'Young Adult'],
+            },
+            {
+                id: '8',
+                title: 'The Hunger Games',
+                author: 'Suzanne Collins',
+                coverUrl: 'https://m.media-amazon.com/images/I/61f1Th-fFjL._AC_UF1000,1000_QL80_.jpg',
+                description: "In a dystopian future, Katniss Everdeen fights for survival in a televised competition known as the Hunger Games.",
+                rating: 4.5,
+                genres: ['Dystopian', 'Young Adult'],
+            },
+            {
+                id: '9',
+                title: 'The Catcher in the Rye',
+                author: 'J.D. Salinger',
+                coverUrl: 'https://m.media-amazon.com/images/I/61gagu6E7dL._AC_UF1000,1000_QL80_.jpg',
+                description:
+                    "A story about Holden Caulfield's experiences in New York City as he goes through a period of teenage rebellion and self-discovery.",
+                rating: 4.0,
+                genres: ['Fiction', 'Literary'],
+            },
+            {
+                id: '10',
+                title: 'The Girl with the Dragon Tattoo',
+                author: 'Stieg Larsson',
+                coverUrl: 'https://m.media-amazon.com/images/I/81x+iB9k9qL._AC_UF1000,1000_QL80_.jpg',
+                description:
+                    "A mystery thriller about a disgraced journalist and a young female hacker who team up to investigate the disappearance of a young woman.",
+                rating: 4.3,
+                genres: ['Mystery', 'Thriller'],
+            },
+        ];
+
+        const mockReviews = {
+            '1': [
+                { id: '1', user: 'User1', text: 'A classic for a reason. Highly recommend!', rating: 5 },
+                { id: '2', user: 'User2', text: 'Found it a bit overrated.', rating: 3 },
+            ],
+            '2': [
+                { id: '3', user: 'User3', text: 'A powerful and moving story.', rating: 5 },
+                { id: '4', user: 'User4', text: 'Important themes, well-written.', rating: 4 },
+            ],
+            '3': [
+                { id: '5', user: 'User5', text: 'A delightful and witty romance.', rating: 5 },
+                { id: '6', user: 'User6', text: 'Enjoyable, but a bit slow-paced.', rating: 4 },
+            ],
+            '4': [
+                { id: '7', user: 'User7', text: 'A chilling and thought-provoking book.', rating: 5 },
+                { id: '8', user: 'User8', text: 'A must-read for fans of dystopian fiction.', rating: 4 },
+            ],
+            '5': [
+                { id: '9', user: 'User9', text: 'An epic adventure. A masterpiece!', rating: 5 },
+                { id: '10', user: 'User10', text: 'A bit long, but worth the journey.', rating: 4 },
+            ],
+            '6': [
+                { id: '11', user: 'User11', text: "Hilarious and clever.  A great read.", rating: 5},
+                { id: '12', user: 'User12', text: "Fun, but not my favorite sci-fi.", rating: 3.5},
+            ],
+            '7': [
+                { id: '13', user: 'User13', text: "Magical!  Brought me back to my childhood.", rating: 5},
+                { id: '14', user: 'User14', text: "A bit slow to start, but worth it.", rating: 4},
+            ],
+            '8': [
+                { id: '15', user: 'User15', text: "Intense and gripping.  Couldn't put it down.", rating: 5},
+                { id: '16', user: 'User16', text: "Good, but very dark.", rating: 4},
+            ],
+            '9': [
+                { id: '17', user: 'Reader1', text: 'A classic for a reason.  Relatable and thought-provoking.', rating: 4 },
+                { id: '18', user: 'Reader2', text: 'I found the main character a bit whiny.', rating: 3 },
+            ],
+            '10': [
+                { id: '19', user: 'Reader3', text: 'A thrilling mystery with complex characters.', rating: 4.5 },
+                { id: '20', user: 'Reader4', text: 'Kept me on the edge of my seat!', rating: 5 },
+            ],
+        };
+
+        let userPreferences = ['Fantasy', 'Sci-Fi']; // Default preferences
+        let selectedBook = null;
+        let username = "User123"; //  Mock user.
+        const allGenres = ['Classic', 'Fiction', 'Romance', 'Dystopian', 'Science Fiction', 'Fantasy', 'Adventure', 'Comedy', 'Young Adult', 'Literary', 'Mystery', 'Thriller'];
+
+
+        const recommendationsContainer = document.getElementById('recommendations-container');
+        const bookDetailsContainer = document.getElementById('book-details');
+        const searchBox = document.getElementById('search-box');
+        const preferencesButton = document.getElementById('preferences-button');
+        const preferencesPanel = document.getElementById('preferences-panel');
+        const savePreferencesButton = document.getElementById('save-preferences');
+        const reviewInput = document.getElementById('review-input');
+        const submitReviewButton = document.getElementById('submit-review');
+        const reviewMessageContainer = document.getElementById('review-message');
+        const genreOptionsContainer = document.getElementById('genre-options');
+
+        function displayBookList(books) {
+            recommendationsContainer.innerHTML = ''; // Clear previous recommendations
+            books.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.dataset.bookId = book.id;
+
+                const bookImage = document.createElement('img');
+                bookImage.src = book.coverUrl;
+                bookImage.alt = book.title;
+
+                const bookCardBody = document.createElement('div');
+                bookCardBody.className = 'book-card-body';
+
+                const bookTitle = document.createElement('h3');
+                bookTitle.className = 'book-title';
+                bookTitle.textContent = book.title;
+
+                const bookAuthor = document.createElement('p');
+                bookAuthor.className = 'book-author';
+                bookAuthor.textContent = book.author;
+
+                bookCardBody.appendChild(bookTitle);
+                bookCardBody.appendChild(bookAuthor);
+                bookCard.appendChild(bookImage);
+                bookCard.appendChild(bookCardBody);
+                bookCard.addEventListener('click', () => showBookDetails(book.id));
+                recommendationsContainer.appendChild(bookCard);
+            });
+        }
+
+        function showBookDetails(bookId) {
+            selectedBook = mockBooks.find(book => book.id === bookId);
+            if (!selectedBook) return;
+
+            bookDetailsContainer.querySelector('#detail-title').textContent = selectedBook.title;
+            bookDetailsContainer.querySelector('#detail-author').textContent = `By ${selectedBook.author}`;
+            bookDetailsContainer.querySelector('#detail-image').src = selectedBook.coverUrl;
+            bookDetailsContainer.querySelector('#detail-description').textContent = selectedBook.description;
+            bookDetailsContainer.querySelector('#detail-rating').textContent = selectedBook.rating;
+
+            const genresDiv = bookDetailsContainer.querySelector('#detail-genres');
+            genresDiv.innerHTML = ''; // Clear previous genres
+            selectedBook.genres.forEach(genre =>{
+                const genreSpan = document.createElement('span');
+                genreSpan.className = 'bg-indigo-700 text-indigo-200 rounded-full px-3 py-1 text-sm';
+                genreSpan.textContent = genre;
+                genresDiv.appendChild(genreSpan);
+            });
+
+            const reviewsDiv = bookDetailsContainer.querySelector('#detail-reviews');
+            reviewsDiv.innerHTML = ''; // Clear previous reviews
+            const bookReviews = mockReviews[bookId] || [];  // Get reviews for this book
+            bookReviews.forEach(review => {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review';
+                reviewDiv.innerHTML = `<p class="font-semibold text-indigo-200">${review.user}</p>
+                                       <p class="text-gray-300">${review.text}</p>
+                                       <p class="text-yellow-400 text-sm">Rating: ${review.rating} <i class="fas fa-star"></i></p>`;
+                reviewsDiv.appendChild(reviewDiv);
+            });
+
+            bookDetailsContainer.classList.remove('hidden');
+            recommendationsContainer.classList.add('hidden');
+            preferencesPanel.classList.add('hidden');
+
+            // Clear review input when showing a new book's details
+            reviewInput.value = '';
+            //Reset rating stars
+            const ratingInputs = document.querySelectorAll('input[name="rating"]');
+            ratingInputs.forEach(input => input.checked = false);
+            document.getElementById('star5').checked = true; //set default to 5.
+            reviewMessageContainer.textContent = ''; // Clear any previous messages
+        }
+
+        function getSelectedRating() {
+            const ratingInputs = document.querySelectorAll('input[name="rating"]');
+            for (const input of ratingInputs) {
+                if (input.checked) {
+                    return parseInt(input.value);
+                }
+            }
+            return 5; // Default rating
+        }
+
+        submitReviewButton.addEventListener('click', () => {
+            if (!selectedBook) {
+                reviewMessageContainer.textContent = 'Please select a book to review.';
+                return;
+            }
+
+            const reviewText = reviewInput.value.trim();
+            if (!reviewText) {
+                reviewMessageContainer.textContent = 'Please write a review.';
+                return;
+            }
+
+            const rating = getSelectedRating();
+
+            const newReview = {
+                id: crypto.randomUUID(),
+                bookId: selectedBook.id,
+                user: username, //  Use the mock username
+                text: reviewText,
+                rating: rating,
+            };
+
+            // Simulate sending review to server (in real app, use fetch or similar)
+            mockReviews[selectedBook.id] = mockReviews[selectedBook.id] || [];
+            mockReviews[selectedBook.id].push(newReview);
+
+            // Update the displayed reviews
+            showBookDetails(selectedBook.id);
+            reviewInput.value = '';
+            reviewMessageContainer.textContent = 'Thank you for your review!';
+        });
+
+        searchBox.addEventListener('input', (event) => {
+            const query = event.target.value.toLowerCase();
+            const filteredBooks = mockBooks.filter(book =>
+                book.title.toLowerCase().includes(query) ||
+                book.author.toLowerCase().includes(query) ||
+                book.genres.some(genre => genre.toLowerCase().includes(query))
+            );
+            displayBookList(filteredBooks);
+        });
+
+        preferencesButton.addEventListener('click', () => {
+            preferencesPanel.classList.toggle('hidden');
+            recommendationsContainer.classList.add('hidden');
+            bookDetailsContainer.classList.add('hidden');
+        });
+
+        function renderGenreOptions() {
+            genreOptionsContainer.innerHTML = '';
+            allGenres.forEach(genre => {
+                const genreOption = document.createElement('div');
+                genreOption.className = userPreferences.includes(genre) ? 'genre-select selected' : 'genre-select';
+                genreOption.textContent = genre;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = userPreferences.includes(genre);
+                checkbox.addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        userPreferences.push(genre);
+                        genreOption.classList.add('selected');
+                    } else {
+                        userPreferences = userPreferences.filter(pref => pref !== genre);
+                        genreOption.classList.remove('selected');
+                    }
+                    displayRecommendations(); // Update recommendations immediately on preference change
+                });
+
+                genreOption.appendChild(checkbox);
+                genreOptionsContainer.appendChild(genreOption);
+            });
+        }
+
+        savePreferencesButton.addEventListener('click', () => {
+            preferencesPanel.classList.add('hidden');
+            recommendationsContainer.classList.remove('hidden');
+            displayRecommendations();
+        });
+
+        function displayRecommendations() {
+            const filteredBooks = mockBooks.filter(book =>
+                userPreferences.some(pref => book.genres.includes(pref))
+            );
+            displayBookList(filteredBooks);
+        }
+
+        // Initial display
+        renderGenreOptions();
+        displayRecommendations(); // Show initial recommendations
+    </script>
 </body>
 </html>
+
