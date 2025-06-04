@@ -1,30 +1,44 @@
-document.getElementById('preferenceForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const genre = document.getElementById('genre').value;
-
-  const response = await fetch('/recommend', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ genre })
-  });
-
-  const books = await response.json();
-  const container = document.getElementById('recommendations');
-  container.innerHTML = '<h2>Recommended Books</h2>';
-
-  if (books.length === 0) {
-    container.innerHTML += '<p>No recommendations found.</p>';
-  }
-
-  books.forEach(book => {
-    container.innerHTML += `
-      <div class="book">
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Genre:</strong> ${book.genre}</p>
-        <p><strong>Rating:</strong> ${book.rating}</p>
-        <p>${book.review}</p>
-      </div>
-    `;
-  });
-});
+async function getWeather() {
+    const city = document.getElementById("cityInput").value;
+    const weatherResult = document.getElementById("weatherResult");
+    if (!city) {
+        weatherResult.textContent = "Please enter a city name.";
+        return;
+    }
+    const apiKey = " "; // Replace with your OpenWeatherMap API key
+    const url =
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("City not found");
+        const data = await res.json();
+        weatherResult.innerHTML = `
+<p>Temperature: ${data.main.temp} °C</p>
+<p>Condition: ${data.weather[0].description}</p> `;
+    } catch (error) {
+        weatherResult.textContent = error.message;
+    }
+}
+function calculateIterative() {
+    const num = parseInt(document.getElementById("numberInput").value);
+    const resultDiv = document.getElementById("factorialResult");
+    if (isNaN(num) || num < 0) {
+        resultDiv.textContent = "Please enter a valid positive integer.";
+        return;
+    }
+    let fact = 1;
+    for (let i = 2; i <= num; i++) {
+        fact *= i;
+    }
+    resultDiv.textContent = `Iterative Result: ${fact}`;
+}
+function calculateRecursive() {
+    const num = parseInt(document.getElementById("numberInput").value);
+    const resultDiv = document.getElementById("factorialResult");
+    if (isNaN(num) || num < 0) {
+        resultDiv.textContent = "Please enter a valid positive integer.";
+        return;
+    }
+    const recursiveFact = (n) => (n <= 1 ? 1 : n * recursiveFact(n - 1));
+    resultDiv.textContent = `Recursive Result: ${recursiveFact(num)}`;
+}
