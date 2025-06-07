@@ -1,1 +1,26 @@
-WEEK-01
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather & Factorial</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>Weather</h1>
+        <input id="cityInput" placeholder="City name" />
+        <button onclick="getWeather()">Get</button>
+        <div id="weatherResult"></div>
+        <h1>Factorial</h1>
+        <input type="number" id="numberInput" placeholder="Number" />
+        <button onclick="calculateIterative()">Iterative</button>
+        <button onclick="calculateRecursive()">Recursive</button>
+        <div id="factorialResult"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
