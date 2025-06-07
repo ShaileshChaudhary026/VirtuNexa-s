@@ -1,2 +1,1 @@
-# VirtuNexa-s
-TASK'S_LIST
+WEEK - 02 & TASK - 02
