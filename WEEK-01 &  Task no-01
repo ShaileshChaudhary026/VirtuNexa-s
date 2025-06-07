@@ -24,3 +24,144 @@
 </body>
 
 </html>
+
+
+..............................................................CSS...................................................................................
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: sans-serif;
+    background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+    background-size: 400% 400%;
+    animation: bgShift 12s infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: fadeInUp 1s ease;
+}
+
+h1 {
+    margin: 10px 0;
+    font-size: 1.8em;
+    color: #333;
+}
+
+input,
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+input:focus {
+    border-color: #7b2ff7;
+    outline: none;
+}
+
+button {
+    background: #7b2ff7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #5a1bb7;
+    transform: scale(1.05);
+}
+
+#weatherResult,
+#factorialResult {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #444;
+    font-size: 1em;
+}
+
+@keyframes bgShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+..................................................................JS.......................................................................................
+
+async function getWeather() {
+    const city = document.getElementById("cityInput").value;
+    const weatherResult = document.getElementById("weatherResult");
+    if (!city) {
+        weatherResult.textContent = "Please enter a city name.";
+        return;
+    }
+    const apiKey = " "; // Replace with your OpenWeatherMap API key
+    const url =
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("City not found");
+        const data = await res.json();
+        weatherResult.innerHTML = `
+<p>Temperature: ${data.main.temp} °C</p>
+<p>Condition: ${data.weather[0].description}</p> `;
+    } catch (error) {
+        weatherResult.textContent = error.message;
+    }
+}
+function calculateIterative() {
+    const num = parseInt(document.getElementById("numberInput").value);
+    const resultDiv = document.getElementById("factorialResult");
+    if (isNaN(num) || num < 0) {
+        resultDiv.textContent = "Please enter a valid positive integer.";
+        return;
+    }
+    let fact = 1;
+    for (let i = 2; i <= num; i++) {
+        fact *= i;
+    }
+    resultDiv.textContent = `Iterative Result: ${fact}`;
+}
+function calculateRecursive() {
+    const num = parseInt(document.getElementById("numberInput").value);
+    const resultDiv = document.getElementById("factorialResult");
+    if (isNaN(num) || num < 0) {
+        resultDiv.textContent = "Please enter a valid positive integer.";
+        return;
+    }
+    const recursiveFact = (n) => (n <= 1 ? 1 : n * recursiveFact(n - 1));
+    resultDiv.textContent = `Recursive Result: ${recursiveFact(num)}`;
+}
+
+
