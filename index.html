@@ -1,26 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather & Factorial</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Mock Post Scheduler</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="container">
-        <h1>Weather</h1>
-        <input id="cityInput" placeholder="City name" />
-        <button onclick="getWeather()">Get</button>
-        <div id="weatherResult"></div>
-        <h1>Factorial</h1>
-        <input type="number" id="numberInput" placeholder="Number" />
-        <button onclick="calculateIterative()">Iterative</button>
-        <button onclick="calculateRecursive()">Recursive</button>
-        <div id="factorialResult"></div>
+        <h1>Schedule Your Mock Social Media Post</h1>
+
+        <div class="input-section">
+            <label for="platform">Platform:</label>
+            <select id="platform">
+                <option value="facebook">Facebook</option>
+                <option value="twitter">Twitter</option>
+                <option value="instagram">Instagram</option>
+                <option value="linkedin">LinkedIn</option>
+            </select>
+
+            <label for="post-text">Post Text:</label>
+            <textarea id="post-text" placeholder="Enter your post text here"></textarea>
+
+            <label for="image-url">Image URL (Optional):</label>
+            <input type="url" id="image-url" placeholder="Enter image URL">
+
+            <label for="schedule-time">Schedule Time:</label>
+            <input type="datetime-local" id="schedule-time">
+
+            <button id="schedule-button">Schedule Post</button>
+        </div>
+
+        <div class="preview-section">
+            <h2>Post Preview</h2>
+            <div id="post-preview-container">
+                <div id="facebook-preview" class="social-preview">
+                    <div class="platform-header">Facebook</div>
+                    <div class="post-content">
+                        <p class="preview-text"></p>
+                        <img class="preview-image" src="" alt="">
+                    </div>
+                </div>
+
+                <div id="twitter-preview" class="social-preview">
+                    <div class="platform-header">Twitter</div>
+                    <div class="post-content">
+                        <p class="preview-text"></p>
+                        <img class="preview-image" src="" alt="">
+                    </div>
+                </div>
+
+                <div id="instagram-preview" class="social-preview">
+                    <div class="platform-header">Instagram</div>
+                    <div class="post-content">
+                        <img class="preview-image" src="" alt="">
+                        <p class="preview-text"></p>
+                    </div>
+                </div>
+
+                <div id="linkedin-preview" class="social-preview">
+                    <div class="platform-header">LinkedIn</div>
+                    <div class="post-content">
+                        <p class="preview-text"></p>
+                        <img class="preview-image" src="" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scheduled-posts-section">
+            <h2>Scheduled Posts</h2>
+            <ul id="scheduled-posts-list">
+                </ul>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
-
 </html>
